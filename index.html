@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Birthday de pondati!</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+    body, html { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #fff; }
+    .page { position: fixed; inset: 0; width: 100vw; height: 100vh; display: none !important; pointer-events: none !important; overflow: hidden; z-index: 1; }
+    .page.active { display: flex !important; pointer-events: auto !important; z-index: 100; }
+
+    /* PAGE 1 */
+    #page1 { flex-direction: column; justify-content: center; align-items: center; background: #fff; padding: 24px; text-align: center; }
+    .q-title { font-size: clamp(1.8rem, 6.5vw, 2.6rem); font-weight: 800; color: #222; margin-bottom: 36px; line-height: 1.3; max-width: 500px; }
+    .btn-wrap { display: flex; gap: 20px; align-items: center; justify-content: center; width: 100%; max-width: 320px; }
+    .btn { font-size: 1.2rem; font-weight: 700; padding: 14px 38px; border-radius: 50px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15); touch-action: manipulation; }
+    .btn-yes { background: #e91e63; color: #fff; z-index: 10; }
+    .btn-yes:active { transform: scale(0.92); background: #c2185b; }
+    .btn-no { background: #eceff1; color: #455a64; z-index: 20; }
+
+    /* PAGE 2 */
+    #page2 { flex-direction: column; justify-content: space-between; align-items: center; background: #fff; padding: 20px 16px 20px; text-align: center; transition: background-color 3s ease; }
+    #page2.baby-pink { background-color: #f8bbd0; }
+    .top-box { width: 100%; z-index: 5; margin-top: 10px; }
+    .main-heading { font-size: clamp(1.4rem, 4.8vw, 2rem); font-weight: 900; color: #ad1457; opacity: 0; transform: translateY(-12px); transition: opacity 1.2s ease, transform 1.2s ease; text-shadow: 0 2px 10px rgba(173,20,87,0.15); line-height: 1.3; }
+    
+    .center-box { width: 100%; max-width: 460px; display: flex; flex-direction: column; justify-content: center; gap: 10px; z-index: 5; flex-grow: 1; margin: 10px 0; }
+    .msg-line { font-size: clamp(0.88rem, 3.4vw, 1.05rem); font-weight: 600; color: #4a148c; opacity: 0; transform: translateY(10px); transition: opacity 1.2s ease, transform 1.2s ease; line-height: 1.4; }
+    .msg-line.final { font-size: clamp(1.05rem, 4vw, 1.25rem); font-weight: 800; color: #880e4f; margin-top: 2px; }
+    .show-fade { opacity: 1 !important; transform: translateY(0) !important; }
+
+    .lower-box { width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 5; opacity: 0; transform: scale(0.9); transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .cake-wrap { position: relative; width: 110px; height: 68px; margin: 0 auto; }
+    .cake-base { position: absolute; bottom: 0; left: 0; width: 110px; height: 36px; background: linear-gradient(to right, #f06292, #ec407a); border-radius: 10px 10px 6px 6px; box-shadow: 0 4px 12px rgba(233,30,99,0.3); }
+    .cake-base::before { content: ""; position: absolute; top: 10px; left: 0; width: 100%; height: 6px; background: #fff; opacity: 0.9; }
+    .cake-top { position: absolute; bottom: 32px; left: 15px; width: 80px; height: 26px; background: linear-gradient(to right, #ff4081, #f50057); border-radius: 8px 8px 4px 4px; }
+    .cake-top::before { content: ""; position: absolute; top: 7px; left: 0; width: 100%; height: 4px; background: #fff; opacity: 0.9; }
+    .candles { position: absolute; bottom: 58px; left: 0; width: 100%; display: flex; justify-content: center; gap: 12px; }
+    .candle { position: relative; width: 5px; height: 14px; background: repeating-linear-gradient(45deg, #fff, #fff 3px, #29b6f6 3px, #29b6f6 6px); border-radius: 2px; }
+    .flame { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); width: 7px; height: 10px; background: radial-gradient(ellipse at bottom, #ffee58 0%, #ff9800 60%, transparent 90%); border-radius: 50% 50% 35% 35%; box-shadow: 0 0 8px #ffeb3b, 0 0 12px #ff9800; animation: flicker 0.6s infinite alternate ease-in-out; transition: opacity 0.3s ease, transform 0.3s ease; }
+    .flame.off { opacity: 0 !important; transform: translateX(-50%) scale(0) !important; }
+    @keyframes flicker { 0% { transform: translateX(-50%) scale(1) rotate(-2deg); } 100% { transform: translateX(-50%) scale(1.15, 1.25) rotate(2deg); } }
+
+    .blow-text { margin-top: 6px; font-size: 1.05rem; font-weight: 800; color: #880e4f; opacity: 0; transition: opacity 0.8s ease; }
+    .countdown { font-size: 1.9rem; font-weight: 900; color: #c2185b; height: 32px; line-height: 32px; margin-top: 2px; opacity: 0; transition: transform 0.2s ease; }
+
+    #balloon-box { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+    .balloon { position: absolute; bottom: -110px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; opacity: 0.85; box-shadow: inset -4px -4px 10px rgba(0,0,0,0.12); animation: floatUp 7s linear forwards; }
+    .balloon::after { content: ""; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 2px; height: 14px; background-color: rgba(100,100,100,0.4); }
+    @keyframes floatUp { 0% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-50vh) translateX(-12px); } 100% { transform: translateY(-120vh) translateX(0); } }
+
+    /* PAGE 3 */
+    #page3 { flex-direction: column; justify-content: flex-start; align-items: center; background: #05050c; color: #333; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 24px 16px 40px; transition: background-color 2.5s ease; }
+    #page3.baby-pink-bg { background-color: #f8bbd0 !important; }
+    #fireworks-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 25; }
+
+    .letter-card { position: relative; width: 100%; max-width: 440px; background: #fdfbf7; border: 1px solid #e0d7cb; border-radius: 12px; padding: 24px 18px; margin: auto; box-shadow: 0 10px 30px rgba(136,14,79,0.15), 0 2px 8px rgba(0,0,0,0.06); opacity: 0; transform: translateY(25px) scale(0.96); transition: opacity 1.8s ease, transform 1.8s cubic-bezier(0.16, 1, 0.3, 1); z-index: 30; }
+    .letter-card.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+    .photo-collage { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 18px; }
+    .photo-frame { width: 31%; height: 125px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background: #fff; }
+    .photo-frame.center-photo { transform: scale(1.08); z-index: 2; }
+    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; mask-image: radial-gradient(circle, rgba(0,0,0,1) 75%, rgba(0,0,0,0.3) 100%); -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 75%, rgba(0,0,0,0.3) 100%); }
+
+    .letter-body { font-family: 'Georgia', serif, -apple-system; color: #3e2723; text-align: center; line-height: 1.6; }
+    .letter-title { font-size: 1.2rem; font-weight: 700; color: #c2185b; margin-bottom: 10px; line-height: 1.35; }
+    .letter-para { font-size: 0.92rem; font-weight: 500; color: #4e342e; margin-bottom: 12px; }
+    .letter-divider { width: 45px; height: 2px; background: #f48fb1; margin: 12px auto; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <div id="page1" class="page active">
+    <h1 class="q-title">Are you the Birthday Girl 🎂</h1>
+    <div class="btn-wrap">
+      <button class="btn btn-yes" id="btn-yes">Yes</button>
+      <button class="btn btn-no" id="btn-no">No</button>
+    </div>
+  </div>
+
+  <div id="page2" class="page">
+    <div id="balloon-box"></div>
+    <div class="top-box">
+      <h1 class="main-heading" id="main-heading">Happy Birthday de pondati 😘🫂</h1>
+    </div>
+    <div class="center-box">
+      <p class="msg-line" id="msg-1">Happy Birthday My Love</p>
+      <p class="msg-line" id="msg-2">Today is most beautiful day, Because it's your Birthday.</p>
+      <p class="msg-line" id="msg-3">Wishing you happy returns of the day always god bless you with good health Happy Birthday Once Again</p>
+      <p class="msg-line final" id="msg-4">Happy Birthday de pondati 💕</p>
+    </div>
+    <div class="lower-box" id="lower-box">
+      <div class="cake-wrap">
+        <div class="candles">
+          <div class="candle"><div class="flame" id="flame-1"></div></div>
+          <div class="candle"><div class="flame" id="flame-2"></div></div>
+          <div class="candle"><div class="flame" id="flame-3"></div></div>
+        </div>
+        <div class="cake-top"></div>
+        <div class="cake-base"></div>
+      </div>
+      <div class="blow-text" id="blow-text">Blow in</div>
+      <div class="countdown" id="countdown">5</div>
+    </div>
+  </div>
+
+  <div id="page3" class="page">
+    <canvas id="fireworks-canvas"></canvas>
+    <div class="letter-card" id="letter-card">
+      <div class="photo-collage">
+        <div class="photo-frame"><img src="1000148266.jpg" onerror="this.src='photo2.jpg'" alt="Hands 1"></div>
+        <div class="photo-frame center-photo"><img src="1000148259.jpg" onerror="this.src='photo1.jpg'" alt="Collage"></div>
+        <div class="photo-frame"><img src="1000148268.jpg" onerror="this.src='photo3.jpg'" alt="Hands 2"></div>
+      </div>
+      <div class="letter-body">
+        <div class="letter-title">Happy Birthday, my girl! ❤️🎂</div>
+        <p class="letter-para">You make my life brighter every day. ✨<br>May all your dreams come true. 💫<br>Keep smiling and stay happy always. 😊<br>Wishing you lots of love and happiness today. 💖</p>
+        <div class="letter-divider"></div>
+        <p class="letter-para">I still smile when I remember all the beautiful memories and laughs we’ve shared together. 🥹💖<br>Those little moments with you will always have a special place in my heart.<br>May all your dreams come true and your smile never fade. 💫</p>
+        <div class="letter-title" style="font-size: 1.05rem; margin-top: 10px;">Have the most beautiful birthday, my girl! 🎉🎈❤️</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('btn-no');
+    const yesBtn = document.getElementById('btn-yes');
+
+    function moveNoBtn(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      const pad = 24, w = noBtn.offsetWidth || 100, h = noBtn.offsetHeight || 50;
+      const maxX = window.innerWidth - w - pad, maxY = window.innerHeight - h - pad;
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = Math.max(pad, Math.floor(Math.random() * maxX)) + 'px';
+      noBtn.style.top = Math.max(pad, Math.floor(Math.random() * maxY)) + 'px';
+    }
+    noBtn.addEventListener('pointerdown', moveNoBtn);
+    noBtn.addEventListener('click', moveNoBtn);
+
+    let started = false;
+    function triggerYes(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (started) return;
+      started = true;
+      document.getElementById('page1').classList.remove('active');
+      const page2 = document.getElementById('page2');
+      page2.classList.add('active');
+
+      setTimeout(() => {
+        page2.classList.add('baby-pink');
+        startBalloons();
+
+        setTimeout(() => {
+          document.getElementById('main-heading').classList.add('show-fade');
+          setTimeout(() => {
+            document.getElementById('msg-1').classList.add('show-fade');
+            setTimeout(() => {
+              document.getElementById('msg-2').classList.add('show-fade');
+              setTimeout(() => {
+                document.getElementById('msg-3').classList.add('show-fade');
+                setTimeout(() => {
+                  document.getElementById('msg-4').classList.add('show-fade');
+                  setTimeout(() => {
+                    document.getElementById('lower-box').classList.add('show-fade');
+                    setTimeout(() => {
+                      document.getElementById('blow-text').classList.add('show-fade');
+                      const cd = document.getElementById('countdown');
+                      cd.classList.add('show-fade');
+                      
+                      let count = 5;
+                      cd.textContent = count;
+                      const timer = setInterval(() => {
+                        count--;
+                        cd.textContent = count;
+                        cd.style.transform = 'scale(1.25)';
+                        setTimeout(() => { cd.style.transform = 'scale(1)'; }, 150);
+
+                        if (count === 0) {
+                          clearInterval(timer);
+                          document.getElementById('flame-1').classList.add('off');
+                          document.getElementById('flame-2').classList.add('off');
+                          document.getElementById('flame-3').classList.add('off');
+
+                          setTimeout(() => {
+                            clearInterval(bInterval);
+                            document.getElementById('page2').classList.remove('active');
+                            const page3 = document.getElementById('page3');
+                            page3.classList.add('active');
+                            
+                            startFireworks(() => {
+                              page3.classList.add('baby-pink-bg');
+                              setTimeout(() => { document.getElementById('letter-card').classList.add('visible'); }, 600);
+                            });
+                          }, 500);
+                        }
+                      }, 1000);
+                    }, 800);
+                  }, 2000);
+                }, 2000);
+              }, 2000);
+            }, 2000);
+          }, 2000);
+        }, 1500);
+      }, 3000);
+    }
+    yesBtn.addEventListener('pointerdown', triggerYes);
+    yesBtn.addEventListener('click', triggerYes);
+
+    let bInterval;
+    function startBalloons() {
+      const colors = ['#f48fb1', '#81d4fa', '#a5d6a7', '#ffe082', '#ce93d8', '#ffab91'];
+      const box = document.getElementById('balloon-box');
+      function addB() {
+        if (!document.getElementById('page2').classList.contains('active')) return;
+        const b = document.createElement('div');
+        b.className = 'balloon';
+        const sz = Math.floor(Math.random() * 18) + 34;
+        b.style.width = sz + 'px';
+        b.style.height = (sz * 1.25) + 'px';
+        b.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        b.style.left = (Math.random() * (window.innerWidth - sz)) + 'px';
+        const dur = (Math.random() * 2.5 + 5.5).toFixed(1);
+        b.style.animationDuration = dur + 's';
+        box.appendChild(b);
+        setTimeout(() => { if (b && b.parentNode) b.parentNode.removeChild(b); }, dur * 1000);
+      }
+      for (let i = 0; i < 5; i++) setTimeout(addB, i * 350);
+      bInterval = setInterval(addB, 850);
+    }
+
+    function startFireworks(onComplete) {
+      const canvas = document.getElementById('fireworks-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const rockets = [], particles = [];
+      let active = true;
+      const palettes = [
+        ['#ffd700', '#ffb300', '#fff8e1', '#ff6d00'],
+        ['#ff1744', '#ff4081', '#f50057', '#ffffff'],
+        ['#00e5ff', '#00b0ff', '#80d8ff', '#ffffff'],
+        ['#00e676', '#76ff03', '#ccff90', '#ffffff'],
+        ['#e040fb', '#d500f9', '#ea80fc', '#ffffff']
+      ];
+
+      function launch() {
+        if (!active) return;
+        const sx = Math.random() * (window.innerWidth * 0.8) + window.innerWidth * 0.1;
+        const tx = Math.random() * (window.innerWidth * 0.8) + window.innerWidth * 0.1;
+        const ty = Math.random() * (window.innerHeight * 0.45) + window.innerHeight * 0.1;
+        const pal = palettes[Math.floor(Math.random() * palettes.length)];
+        const dx = tx - sx, dy = ty - window.innerHeight;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        rockets.push({ x: sx, y: window.innerHeight, tx, ty, dist, speed: dist / 30, ang: Math.atan2(dy, dx), trav: 0, pal });
+      }
+
+      for (let i = 0; i < 3; i++) setTimeout(launch, i * 200);
+      const fireTimer = setInterval(launch, 380);
+
+      function loop() {
+        ctx.fillStyle = 'rgba(5, 5, 12, 0.25)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = rockets.length - 1; i >= 0; i--) {
+          const r = rockets[i];
+          r.x += Math.cos(r.ang) * r.speed;
+          r.y += Math.sin(r.ang) * r.speed;
+          r.trav += r.speed;
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(r.x, r.y, 3, 3);
+          if (r.trav >= r.dist) {
+            for (let j = 0; j < 70; j++) {
+              const a = Math.random() * Math.PI * 2, sp = Math.random() * 5.5 + 1.5;
+              particles.push({ x: r.tx, y: r.ty, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, alpha: 1, c: r.pal[Math.floor(Math.random() * r.pal.length)] });
+            }
+            rockets.splice(i, 1);
+          }
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.vx *= 0.96; p.vy *= 0.96; p.vy += 0.05;
+          p.x += p.vx; p.y += p.vy;
+          p.alpha -= 0.016;
+          if (p.alpha <= 0) { particles.splice(i, 1); continue; }
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.c;
+          ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+        }
+
+        if (active || particles.length > 0 || rockets.length > 0) requestAnimationFrame(loop);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      requestAnimationFrame(loop);
+
+      setTimeout(() => {
+        clearInterval(fireTimer);
+        active = false;
+        onComplete();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
